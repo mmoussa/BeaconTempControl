@@ -63,7 +63,7 @@ class LoginActivity: AppCompatActivity() {
         try{
             val account: GoogleSignInAccount? = completedTask.getResult(ApiException::class.java)
             //update ui
-            val intent: Intent = Intent(this, MainActivity::class.java)
+            val intent: Intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
         } catch (e: ApiException){
             Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
