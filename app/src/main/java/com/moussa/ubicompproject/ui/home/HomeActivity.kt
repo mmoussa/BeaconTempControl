@@ -7,6 +7,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -51,6 +53,11 @@ class HomeActivity : AppCompatActivity() {
         //Permissions
         val permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.INTERNET)
         requestPermissions(permissions, 0)
+
+        //Setup toolbar
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = "Rooms"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         //Setup gimbal beacons
         Gimbal.setApiKey(application, BuildConfig.API_KEY_GIMBAL)
@@ -141,6 +148,25 @@ class HomeActivity : AppCompatActivity() {
             }
         }
         PlaceManager.getInstance().addListener(placeEventListener)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_toolbar, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when(item.itemId) {
+        R.id.action_settings -> {
+            true
+        }
+
+        android.R.id.home -> {
+            onBackPressed()
+            true
+        }
+        else -> {
+            super.onOptionsItemSelected(item)
+        }
     }
 
     internal inner class GimbalEventReceiver : BroadcastReceiver() {

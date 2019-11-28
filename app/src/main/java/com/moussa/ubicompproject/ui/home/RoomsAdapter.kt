@@ -14,6 +14,8 @@ class RoomsAdapter(private val myDataset: List<Room>):
     class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         var txtRoomName = itemView.txtRoomName
         var viewAvailability = itemView.viewAvailability
+        var txtCurrTemp = itemView.txtCurrentTemp;
+        var txtDesTemp = itemView.txtDesiredTemp;
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -27,6 +29,8 @@ class RoomsAdapter(private val myDataset: List<Room>):
         var room: Room = myDataset[position]
 
         holder.txtRoomName.setText(room.roomName)
+        holder.txtCurrTemp.setText(room.currentTemp.toString() + " C")
+        holder.txtDesTemp.setText(room.desiredTemp.toString() + " C")
         if(room.occupied)
             holder.viewAvailability.setBackgroundResource(R.color.occupied)
         else
