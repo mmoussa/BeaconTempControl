@@ -29,6 +29,7 @@ class RoomDao{
                     roomList.clear()
                     for(doc in value!!){
                         var room: Room = doc.toObject(Room::class.java)
+                        room.roomId = doc.id
                         roomList.add(room)
                         rooms.value = roomList
 

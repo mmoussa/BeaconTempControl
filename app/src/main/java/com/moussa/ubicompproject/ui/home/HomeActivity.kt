@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gimbal.android.*
+import com.google.firebase.firestore.SetOptions
 import com.moussa.ubicompproject.BuildConfig
 import com.moussa.ubicompproject.Model.Room.FirestoreDatabase
 import com.moussa.ubicompproject.Model.Room.Room
@@ -93,7 +94,8 @@ class HomeActivity : AppCompatActivity() {
                 Log.d(TAG, "Visit Start: " + visit!!.place.name)
 //                mBeaconName.setText("You're at: " + visit.place.name)
                 for(room in roomList){
-                    room.occupied = room.roomName == visit.place.name
+                    room.updateOccupied(room.roomName == visit.place.name)
+                    updateDb(room)
                 }
 
                 rvRooms.adapter?.notifyDataSetChanged()
@@ -111,7 +113,8 @@ class HomeActivity : AppCompatActivity() {
 
                 for(room in roomList){
                     if(room.roomName == visit.place.name){
-                        room.occupied = false
+                        room.updateOccupied(false)
+                        updateDb(room)
                     }
                 }
 
@@ -131,14 +134,16 @@ class HomeActivity : AppCompatActivity() {
 //                    mBeaconName.setText("You're at: " + beaconSighting.beacon.name)
                     Log.d(TAG, "You're at: " + beaconSighting.beacon.name)
                     for(room in roomList){
-                        room.occupied = room.beaconName == beaconSighting.beacon.name
+                        room.updateOccupied(room.beaconName == beaconSighting.beacon.name)
+                        updateDb(room)
                     }
                 } else {
 //                    mBeaconName.setText("You're leaving: " + beaconSighting.beacon.name)
                     Log.d(TAG, "You're leaving: " + beaconSighting.beacon.name)
                     for(room in roomList){
                         if(room.beaconName == beaconSighting.beacon.name){
-                            room.occupied = false
+                            room.updateOccupied(false)
+                            updateDb(room)
                         }
                     }
                 }
@@ -167,6 +172,19 @@ class HomeActivity : AppCompatActivity() {
         else -> {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun updateDb(room: Room){
+        if(room.pendingUpdate){
+            val data = hashMapOf("occupied" to room.occupied)
+            FirestoreDatabase.getInstance().db.collection("Rooms")
+                    .document(room.roomId)
+                    .set(data, SetOptions.merge())
+
+            room.pendingUpdate = false
+            Log.d(TAG, "Updating room: " + room.roomName)
+        }
+
     }
 
     internal inner class GimbalEventReceiver : BroadcastReceiver() {
